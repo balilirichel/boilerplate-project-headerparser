@@ -1,27 +1,37 @@
-// index.js
-// where your node app starts
+// Init project
+const express = require('express');
+const app = express();
 
-// init project
-require('dotenv').config();
-var express = require('express');
-var app = express();
+const cors = require('cors');
+app.use(cors({optionsSuccessStatus: 200}));  // Some legacy browsers choke on 204
 
-// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC
-var cors = require('cors');
-app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
-
-// http://expressjs.com/en/starter/static-files.html
+// Static files
 app.use(express.static('public'));
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+// Routing
+app.get("/", function (req, res) {
+
+  res.sendFile(`${__dirname}/views/index.html`);
+
 });
 
-// your first API endpoint...
-app.get('/api/hello', function (req, res) {
-  res.json({ greeting: 'hello API' });
+app.get("/api/whoami", function (req, res) {
+  
+  const responseObj = {
+    "ipaddress": req.ip,
+    "language": req.headers["accept-language"],
+    "software": req.headers["user-agent"]
+  };
+
+  res.json(responseObj);
+
+});
+
+// No matching route
+app.use(function(req, res) {
+
+  res.status(404).sendFile(`${__dirname}/views/404.html`);
+
 });
 
 // listen for requests :)
